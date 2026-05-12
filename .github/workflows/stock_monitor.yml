@@ -1,0 +1,24 @@
+name: 株価監視
+
+on:
+  schedule:
+    - cron: '30 6 * * 1-5'  # 日本時間15:30（UTC6:30）平日のみ
+  workflow_dispatch:  # 手動実行も可能
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Python設定
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: ライブラリインストール
+        run: pip install requests pandas
+      - name: 株価監視実行
+        env:
+          GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
+          GMAIL_PASSWORD: ${{ secrets.GMAIL_PASSWORD }}
+          NOTIFY_ADDRESS: ${{ secrets.NOTIFY_ADDRESS }}
+        run: python stock_monitor.py
